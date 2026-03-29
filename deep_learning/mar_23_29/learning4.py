@@ -2,15 +2,48 @@
 Title: learning4.py
 Content: 实现MNIST手写数字识别
 
-! Deprecated because `fc` cannot be imported. No relevant issues or info found in git repos. 
-! Neither in the internet. 
+! Deprecated because `fc` cannot be imported. No relevant issues or info found in git repos.
+! Neither in the internet.
 """
 
-from utils.ts_print import ts_print
 import struct
+
 # from fc import *
 from learning3 import Network
 from datetime import datetime
+from typing import Literal, Optional
+
+def ts_print(
+    message: str,
+    symbol: Optional[Literal["info", "success", "warning", "error", "debug"]] = None,
+    color: bool = True,
+) -> None:
+    """
+    带时间戳的信息输出函数
+
+    Args:
+        message: 要输出的消息内容
+        symbol: CLI 符号类型，可选值: 'info', 'success', 'warning', 'error', 'debug'，默认无符号
+        color: 是否启用 ANSI 颜色输出（默认 True）
+    """
+    timestamp = datetime.now().strftime("[%Y/%m/%d %H:%M:%S]")
+
+    symbols: dict = {
+        "info": ("ℹ", "\033[36m" if color else ""),  # Cyan
+        "success": ("✔", "\033[32m" if color else ""),  # Green
+        "warning": ("⚠", "\033[33m" if color else ""),  # Yellow
+        "error": ("✖", "\033[31m" if color else ""),  # Red
+        "debug": ("◼", "\033[35m" if color else ""),  # Magenta
+    }
+
+    t_prefix: str = f"{timestamp} "
+    if symbol in symbols:
+        sym, col = symbols[symbol]
+        symbol_prefix: str = f"{col}{sym} \033[0m" if color else f"{sym} "
+    else:
+        symbol_prefix: str = ""
+
+    print(symbol_prefix + f"{t_prefix}{message}")
 
 
 # 数据加载器基类
@@ -37,6 +70,9 @@ class Loader(object):
         """
         将unsigned byte字符转换为整数
         """
+        # return struct.unpack("B", byte)[0]
+        if isinstance(byte, int):
+            return byte
         return struct.unpack("B", byte)[0]
 
 
@@ -92,7 +128,7 @@ class LabelLoader(Loader):
         内部函数，将一个值转换为10维标签向量
         """
         label_vec: list = []
-        label_value: list[int] = self.to_int(label)
+        label_value: int = self.to_int(label)
         for i in range(10):
             if i == label_value:
                 label_vec.append(0.9)
@@ -114,8 +150,8 @@ def get_test_data_set():
     """
     获得测试数据集
     """
-    image_loader = ImageLoader(r"data/MNIST/train-images-idx3-ubyte", 10000)
-    label_loader = LabelLoader(r"data/MNIST/train-labels-idx1-ubyte", 10000)
+    image_loader = ImageLoader(r"data/MNIST/t10k-images-idx3-ubyte", 10000)
+    label_loader = LabelLoader(r"data/MNIST/t10k-labels-idx1-ubyte", 10000)
     return image_loader.load(), label_loader.load()
 
 
@@ -156,48 +192,42 @@ def evaluate(network, test_data_set, test_labels):
 def now():
     return datetime.now().strftime("%c")
 
-def transpose(data_tuple):
-    """
-    对数据元组中的二维列表进行转置
-    输入：(images, labels)，其中 images 是 [N, 784], labels 是 [N,10]
-    输出：(transposed_images, transposed_labels)，其中 images 是 [784, N], labels 是 [10, N]
-    """
-    images, labels = data_tuple
-    
-    # 使用 zip(*data) 实现二维列表转置，并转换回 list 类型
-    # images: (60000, 784) -> (784, 60000)
-    transposed_images = [list(x) for x in zip(*images)]
-    
-    # labels: (60000, 10) -> (10, 60000)
-    transposed_labels = [list(x) for x in zip(*labels)]
-    
-    return transposed_images, transposed_labels
-
 
 def train_and_evaluate():
     last_error_ratio = 1.0
     epoch = 0
-    train_data_set, train_labels = transpose(get_training_data_set())
-    test_data_set, test_labels = transpose(get_test_data_set())
+    train_data_set, train_labels = get_training_data_set()
+    test_data_set, test_labels = get_test_data_set()
+
+    # 为了加快训练，只使用前一部分数据（可选）
+    # train_data_set = train_data_set[:10000]
+    # train_labels = train_labels[:10000]
+
     network = Network([784, 100, 10])
     while True:
         epoch += 1
         network.train(train_labels, train_data_set, 0.01, 1)
-        print(
+        ts_print(
             "%s epoch %d finished, loss %f"
             % (
                 now(),
                 epoch,
                 network.loss(train_labels[-1], network.predict(train_data_set[-1])),
-            )
+            ),
+            "info",
         )
         if epoch % 2 == 0:
             error_ratio = evaluate(network, test_data_set, test_labels)
             print("%s after epoch %d, error ratio is %f" % (now(), epoch, error_ratio))
             if error_ratio > last_error_ratio:
+                ts_print("Early stopping triggered!", "warning")
                 break
             else:
                 last_error_ratio = error_ratio
+
+            # if epoch >= 20:
+            #     ts_print("Max epoch reached!","warning")
+            #     break
 
 
 def main() -> None:
