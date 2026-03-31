@@ -1,9 +1,6 @@
 """
 Title: learning5.py
 Content: 使用 FullConnectedLayer 实现MNIST手写数字识别
-
-! Deprecated because `fc` cannot be imported. No relevant issues or info found in git repos.
-! Neither in the internet.
 """
 
 import numpy as np
@@ -97,16 +94,16 @@ class SigmoidActivator(object):
         return output * (1 - output)
 
     # 神经网络类
-    class Network(object):
-        def __init__(self, layers):
-            """
-            构造函数
-            """
-            self.layers = []
-            for i in range(len(layers) - 1):
-                self.layers.append(
-                    FullConnectedLayer(layers[i], layers[i + 1], SigmoidActivator())
-                )
+class Network(object):
+    def __init__(self, layers):
+        """
+        构造函数
+        """
+        self.layers = []
+        for i in range(len(layers) - 1):
+            self.layers.append(
+                FullConnectedLayer(layers[i], layers[i + 1], SigmoidActivator())
+            )
 
     def predict(self, sample):
         """
