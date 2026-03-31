@@ -1,9 +1,6 @@
 """
 Title: learning4.py
 Content: 实现MNIST手写数字识别
-
-! Deprecated because `fc` cannot be imported. No relevant issues or info found in git repos.
-! Neither in the internet.
 """
 
 import struct
