@@ -1,8 +1,6 @@
 """
 Title: learning6.py
 Content: 卷积神经网络
-
-! deprecated because of the lack of `activator`
 """
 
 from utils.ts_print import ts_print
