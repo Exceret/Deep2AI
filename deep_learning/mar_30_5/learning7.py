@@ -118,7 +118,7 @@ def gradient_check():
     rl = RecurrentLayer(3, 2, IdentityActivator(), 1e-3)
 
     # 计算forward值
-    x, d = data_set()
+    x: list[np.ndarray,np.ndarray] = data_set()[0]
     # x = data_set()
     rl.forward(x[0])
     rl.forward(x[1])
