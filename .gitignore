@@ -208,3 +208,6 @@ __marimo__/
 
 *.png
 *.jpg
+.xml
+.tar
+.zip
