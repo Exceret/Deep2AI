@@ -215,4 +215,6 @@ __marimo__/
 .txt
 *.txt
 *.zip
-*.tar
+*.taropenmmlab/*.pth
+d2l-zh/pytorch/data/bert.small.torch/pretrained.params
+d2l-zh/pytorch/data/snli_1.0/*.jsonl

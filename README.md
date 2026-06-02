@@ -2,6 +2,8 @@
 
 Exceret's personal study to AI
 
-**Goal One**:
+**Goal**:
 
-- "零基础入门深度学习.pdf"
+- "零基础入门深度学习"
+- "动手学深度学习v2"
+- "MMDet/MMSeg"
