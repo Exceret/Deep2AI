@@ -13,3 +13,5 @@ model = init_detector(
     config_file, checkpoint_file, device="cuda:0"
 )  # or device='cuda:0'
 infer_res = inference_detector(model, "demo.jpg")
+
+# model.show_result("demo.jpg", infer_res, out_file = "demo_result.jpg")
